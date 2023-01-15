@@ -13,6 +13,7 @@ import subprocess
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
 from pydub import AudioSegment
+from multiprocessing import Process
 
 pre_subprocess = None
 r = None
@@ -63,6 +64,36 @@ def download_cover(art_url, file_cover):
         r = requests.get(art_url, allow_redirects=True)
     if r != None:
         open(file_cover, 'wb').write(r.content)
+
+
+def convert_to_mp3(a_file_input, a_file_cover, a_album, a_artist, a_title, a_track_number):
+    #print("convert_to_mp3: start converting " + a_file_input)
+    # Use internal filename to Protect from successive conversion
+    a_temp_file_input = a_file_input.replace(".wav", "-tmp.wav")
+    a_file_output = a_file_input.replace(".wav", ".mp3")
+    os.rename(a_file_input, a_temp_file_input)
+
+    sound = AudioSegment.from_wav(a_temp_file_input)
+    sound.export(a_file_output, format="mp3", bitrate="160k", cover=a_file_cover, tags={
+            "album": a_album,
+            "artist": a_artist,
+            "title": a_title,
+            "track": int(a_track_number)
+        }
+    )
+
+    a_file_output_size = os.stat(a_file_output).st_size
+    if a_file_output_size < 1048576:
+        print('\033[33m' + "Warning: small file " + a_file_output + " \033[0m\n")
+
+    if a_file_output_size > 10485760:
+        print('\033[33m' + "Warning: large file " + a_file_output + " \033[0m\n")
+
+    # print("DELETE " + a_file_cover)
+    os.remove(a_file_cover)
+    # print("DELETE " + a_file_input)
+    os.remove(a_temp_file_input)
+    #print("convert_to_mp3: done converting " + a_file_input)
 
 
 def spotify_handler(*args):
@@ -134,27 +165,7 @@ def spotify_handler(*args):
 
         # convert previous file
         if os.path.isfile(pre_file_input):
-            pre_file_output = pre_file_input.replace(".wav", ".mp3")
-            sound = AudioSegment.from_wav(pre_file_input)
-            sound.export(pre_file_output, format="mp3", bitrate="160k", cover=pre_file_cover, tags={
-                    "album": pre_album,
-                    "artist": pre_artist,
-                    "title": pre_title,
-                    "track": int(pre_track_number)
-                }
-            )
-
-            pre_file_output_size = os.stat(pre_file_output).st_size
-            if pre_file_output_size < 1048576: 
-                print('\033[33m' + "Warning: small file " + pre_file_output + " \033[0m\n")
-
-            if pre_file_output_size > 10485760:
-                print('\033[33m' + "Warning: large file " + pre_file_output + " \033[0m\n")
-
-            # print("DELETE " + pre_file_cover)
-            os.remove(pre_file_cover)
-            # print("DELETE " + pre_file_input)
-            os.remove(pre_file_input)
+            Process(target=convert_to_mp3, args=(pre_file_input, pre_file_cover, pre_album, pre_artist, pre_title, pre_track_number)).start()
 
         # download cover
         file_cover = file_input.replace(".wav", ".jpg")
