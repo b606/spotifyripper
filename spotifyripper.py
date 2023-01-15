@@ -5,6 +5,7 @@
 
 import dbus
 import os
+import sys
 import pprint
 import pulsectl
 import re
@@ -25,6 +26,7 @@ pre_track_number = ""
 pre_file_input = ""
 pre_file_cover = ""
 file_cover = ""
+download_path = ""
 spotify_sink_index = 0
 
 
@@ -52,6 +54,22 @@ def create_directory(path_album):
         return "/tmp"
 
     return path_album
+
+
+def get_download_path():
+    if sys.platform == "win32":
+        command = r'reg query "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders" /v "Downloads"'
+        result = subprocess.run(command, stdout=subprocess.PIPE, text = True)
+        download_path = result.stdout.splitlines()[2].split()[2]
+    else:
+        download_path = subprocess.check_output(['xdg-user-dir', 'DOWNLOAD'], text = True).rstrip('\n')
+
+    if download_path == "":
+        download_path = os.path.expanduser("~/Downloads")
+
+    download_path = os.path.join(download_path, 'spotifyripper')
+    print("download_path =  %s" % download_path)
+    return download_path
 
 
 def download_cover(art_url, file_cover):
@@ -105,6 +123,7 @@ def spotify_handler(*args):
     global pre_track_number
     global pre_file_input
     global pre_file_cover
+    global download_path
     global r
     global spotify_sink_index
 
@@ -141,9 +160,8 @@ def spotify_handler(*args):
         print()
 
 
-
         # create dir
-        path_base = os.path.expanduser("~/Downloads/spotifyripper")
+        path_base = os.path.expanduser(download_path)
         if disc_number > 1:
             disc_number_str = str(disc_number) + " "
         else:
@@ -187,6 +205,7 @@ def spotify_handler(*args):
         pre_track_number = track_number
 
 
+download_path = get_download_path()
 spotify_sink_index = get_spotify_sink_index()
 
 DBusGMainLoop(set_as_default=True)
