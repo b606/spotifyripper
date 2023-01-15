@@ -129,13 +129,12 @@ def spotify_handler(*args):
 
     metadata = args[1]["Metadata"]
     # debug
-    # pprint.pprint(metadata)
-
+    #pprint.pprint(metadata)
 
     artist = metadata["xesam:artist"][0]
-    # print("Artist: " + artist)
-    #albumArtist = metadata["xesam:albumArtist"][0]
-    # print("AArtist " + albumArtist)
+    #print("Artist: " + artist)
+    albumArtist = metadata["xesam:albumArtist"][0]
+    #print("AArtist " + albumArtist)
     title = metadata["xesam:title"]
     album = metadata["xesam:album"]
     track_number = metadata["xesam:trackNumber"]
@@ -153,6 +152,7 @@ def spotify_handler(*args):
 
     if title != pre_title:
         print("Artist: " + artist)
+        print("AlbumArtist: " + albumArtist)
         print("Album: " + album)
         print("Title: " + str(track_number) + " - " + title)
         # print("Cover: " + art_url)
