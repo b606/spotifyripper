@@ -92,7 +92,7 @@ def convert_to_mp3(a_file_input, a_file_cover, a_album, a_artist, a_title, a_tra
     os.rename(a_file_input, a_temp_file_input)
 
     sound = AudioSegment.from_wav(a_temp_file_input)
-    sound.export(a_file_output, format="mp3", bitrate="160k", cover=a_file_cover, tags={
+    sound.export(a_file_output, format="mp3", bitrate="320k", cover=a_file_cover, tags={
             "album": a_album,
             "artist": a_artist,
             "title": a_title,
@@ -104,7 +104,7 @@ def convert_to_mp3(a_file_input, a_file_cover, a_album, a_artist, a_title, a_tra
     if a_file_output_size < 1048576:
         print('\033[33m' + "Warning: small file " + a_file_output + " \033[0m\n")
 
-    if a_file_output_size > 10485760:
+    if a_file_output_size > 25485760:
         print('\033[33m' + "Warning: large file " + a_file_output + " \033[0m\n")
 
     # print("DELETE " + a_file_cover)
