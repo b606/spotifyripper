@@ -27,7 +27,7 @@ pre_file_input = ""
 pre_file_cover = ""
 file_cover = ""
 download_path = ""
-spotify_sink_index = 0
+spotify_sink_index = -1
 
 
 def get_spotify_sink_index():
@@ -38,7 +38,7 @@ def get_spotify_sink_index():
             if (sink.name == "Spotify") and (sink.corked == False):
                 return sink.index
 
-    return 0
+    return -1
 
 
 def create_directory(path_album):
@@ -174,9 +174,15 @@ def spotify_handler(*args):
             pre_subprocess.terminate()
         file_input = path_album + "/" + str(track_number) + " - " + artist + " - " + title + ".wav"
 
-        if spotify_sink_index == 0:
+        if spotify_sink_index == -1:
             spotify_sink_index = get_spotify_sink_index()
             print("spotify_sink_index: " + str(spotify_sink_index))
+            # If Spotify not found, do nothing
+            if spotify_sink_index == -1:
+                print("the Spotify client not found.")
+                print("It has to be registered with the audio server by playing a sound.")
+                return
+
 
         if (artist != "") or (album != ""):
             pre_subprocess = subprocess.Popen(["parec",  "--monitor-stream=" + str(spotify_sink_index), "--file-format=wav", file_input])
