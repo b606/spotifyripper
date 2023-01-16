@@ -6,6 +6,7 @@
 import dbus
 import os
 import sys
+import time
 import pprint
 import pulsectl
 import re
@@ -27,6 +28,7 @@ pre_file_input = ""
 pre_file_cover = ""
 file_cover = ""
 download_path = ""
+advertisement_detected = False
 spotify_sink_index = -1
 
 
@@ -125,6 +127,7 @@ def spotify_handler(*args):
     global pre_file_cover
     global download_path
     global r
+    global advertisement_detected
     global spotify_sink_index
 
     metadata = args[1]["Metadata"]
@@ -185,7 +188,12 @@ def spotify_handler(*args):
 
 
         if (artist != "") or (album != ""):
+            # parec starts too soon after the advertisement bits.
+            # Add 1s delay in order to skip the end of the advertisement.
+            if advertisement_detected == True:
+                time.sleep(1)
             pre_subprocess = subprocess.Popen(["parec",  "--monitor-stream=" + str(spotify_sink_index), "--file-format=wav", file_input])
+            advertisement_detected = False
 
         # convert previous file
         if os.path.isfile(pre_file_input):
@@ -209,6 +217,8 @@ def spotify_handler(*args):
         pre_title = title
     if track_number != "":        
         pre_track_number = track_number
+    if (artist == "") and (album == ""):
+        advertisement_detected = True
 
 
 download_path = get_download_path()
