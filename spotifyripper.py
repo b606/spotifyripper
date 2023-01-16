@@ -179,7 +179,7 @@ def spotify_handler(*args):
             print("spotify_sink_index: " + str(spotify_sink_index))
             # If Spotify not found, do nothing
             if spotify_sink_index == -1:
-                print("the Spotify client not found.")
+                print("the Spotify client is not found.")
                 print("It has to be registered with the audio server by playing a sound.")
                 return
 
