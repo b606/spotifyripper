@@ -138,7 +138,7 @@ def spotify_handler(*args):
 
     metadata = args[1]["Metadata"]
     # debug
-    #pprint.pprint(metadata)
+    # pprint.pprint(metadata)
 
     artist = metadata["xesam:artist"][0]
     #print("Artist: " + artist)
@@ -156,6 +156,9 @@ def spotify_handler(*args):
 
     # if albumArtist != "":
     #     artist = albumArtist
+    
+    if albumArtist == "":
+        albumArtist = artist
     
     if title != "":
         title = title.replace("/", "-")
@@ -182,7 +185,7 @@ def spotify_handler(*args):
         if compilation_album == True:
             path_album = create_directory(path_base + "/MyCompilation")
         else:
-            path_album = create_directory(path_base + "/" + artist + "/" + disc_number_str + album)
+            path_album = create_directory(path_base + "/" + albumArtist + "/" + disc_number_str + album)
 
         # print("path_album: " + path_album)
 
