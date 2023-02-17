@@ -107,7 +107,7 @@ def convert_to_mp3(a_file_input, a_file_cover, a_album, a_artist, a_title, a_tra
         a_file_input_size = os.stat(a_file_input).st_size
         # dirty hack: sometimes the exported file is corrupt (very small size < 200 ko)
         # rerun sound.export (?)
-        if a_file_output_size < a_file_output_size/7:
+        if a_file_output_size < a_file_input_size/7:
             sound.export(a_file_output, format="mp3", bitrate="320k", cover=a_file_cover, tags={
                     "album": a_album,
                     "artist": a_artist,
