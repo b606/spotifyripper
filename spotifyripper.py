@@ -147,6 +147,9 @@ def spotify_handler(*args):
     # if albumArtist != "":
     #     artist = albumArtist
     
+    if albumArtist == "":
+        albumArtist = artist
+
     if title != "":
         title = title.replace("/", "-")
         
@@ -169,7 +172,7 @@ def spotify_handler(*args):
             disc_number_str = str(disc_number) + " "
         else:
             disc_number_str = ""
-        path_album = create_directory(path_base + "/" + artist + "/" + disc_number_str + album)
+        path_album = create_directory(path_base + "/" + albumArtist + "/" + disc_number_str + album)
         # print("path_album: " + path_album)
 
         # record stream
