@@ -124,6 +124,40 @@ def convert_to_mp3(a_file_input, a_file_cover, a_album, a_artist, a_title, a_tra
     #print("convert_to_mp3: done converting " + a_file_input)
 
 
+def convert_to_opus(a_file_input, a_file_cover, a_album, a_artist, a_title, a_track_number):
+    # Use internal filename to Protect from successive conversion
+    a_temp_file_input = a_file_input.replace(".wav", "-tmp.wav")
+    a_file_output = a_file_input.replace(".wav", ".opus")
+    os.rename(a_file_input, a_temp_file_input)
+
+    sound = AudioSegment.from_wav(a_temp_file_input)
+    # Recommended: Opus at 128 KB/s (VBR) is pretty much transparent
+    sound.export(a_file_output, format="opus", codec="libopus", bitrate="192k", tags={
+            "album": a_album,
+            "artist": a_artist,
+            "title": a_title,
+            "track": int(a_track_number)
+        }
+    )
+
+    a_file_output_size = os.stat(a_file_output).st_size
+    if a_file_output_size < 1048576:
+        print('\033[33m' + "Warning: small file " + a_file_output + " \033[0m\n")
+
+    if a_file_output_size > 25485760:
+        print('\033[33m' + "Warning: large file " + a_file_output + " \033[0m\n")
+
+    external_cover_file = os.path.dirname(a_file_cover) + "/cover.jpg"
+    if not os.path.isfile(external_cover_file):
+        os.rename(a_file_cover, external_cover_file)
+    else:
+        # print("DELETE " + a_file_cover)
+        os.remove(a_file_cover)
+
+    # print("DELETE " + a_file_input)
+    os.remove(a_temp_file_input)
+
+
 def spotify_handler(*args):
     global pre_album
     global pre_artist
