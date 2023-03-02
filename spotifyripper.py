@@ -109,8 +109,13 @@ def convert_to_mp3(a_file_input, a_file_cover, a_album, a_artist, a_title, a_tra
     if a_file_output_size > 25485760:
         print('\033[33m' + "Warning: large file " + a_file_output + " \033[0m\n")
 
-    # print("DELETE " + a_file_cover)
-    os.remove(a_file_cover)
+    external_cover_file = os.path.dirname(a_file_cover) + "/cover.jpg"
+    if not os.path.isfile(external_cover_file):
+        os.rename(a_file_cover, external_cover_file)
+    else:
+        # print("DELETE " + a_file_cover)
+        os.remove(a_file_cover)
+
     # print("DELETE " + a_file_input)
     os.remove(a_temp_file_input)
     #print("convert_to_mp3: done converting " + a_file_input)
