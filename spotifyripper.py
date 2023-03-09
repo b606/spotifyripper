@@ -35,8 +35,9 @@ spotify_sink_index = -1
 def get_spotify_sink_index():
     with pulsectl.Pulse('spotify') as pulse:
         for sink in pulse.sink_input_list():
-            # print("sink.name:" + sink.name)
-            # print("sink.corked:" + str(sink.corked))
+            # if (sink.name == "Spotify"):
+                # print("sink.name:" + sink.name)
+                # print("sink.corked:" + str(sink.corked))
             if (sink.name == "Spotify") and (sink.corked == False):
                 return sink.index
 
@@ -171,7 +172,7 @@ def spotify_handler(*args):
 
     metadata = args[1]["Metadata"]
     # debug
-    #pprint.pprint(metadata)
+    # pprint.pprint(metadata)
 
     artist = metadata["xesam:artist"][0]
     #print("Artist: " + artist)
@@ -219,14 +220,17 @@ def spotify_handler(*args):
             pre_subprocess.terminate()
         file_input = path_album + "/" + str(track_number) + " - " + artist + " - " + title + ".wav"
 
+        # refresh spotify_sink_index
+        old_spotify_sink_index = spotify_sink_index
+        spotify_sink_index = get_spotify_sink_index()
+        if (old_spotify_sink_index != spotify_sink_index):
+            print("(info) spotify_sink_index: " + str(spotify_sink_index))
+
+        # If Spotify not found, do nothing
         if spotify_sink_index == -1:
-            spotify_sink_index = get_spotify_sink_index()
-            print("spotify_sink_index: " + str(spotify_sink_index))
-            # If Spotify not found, do nothing
-            if spotify_sink_index == -1:
-                print("the Spotify client is not found.")
-                print("It has to be registered with the audio server by playing a sound.")
-                return
+            print("the Spotify client is not found.")
+            print("It has to be registered with the audio server by playing a sound.")
+            return
 
 
         if (artist != "") or (album != ""):
