@@ -203,8 +203,6 @@ def spotify_handler(*args):
         print("Title: " + str(track_number) + " - " + title)
         # print("Cover: " + art_url)
         # print("Track: " + str(track_number))
-        print()
-
 
         # create dir
         path_base = os.path.expanduser(download_path)
@@ -212,8 +210,9 @@ def spotify_handler(*args):
             disc_number_str = str(disc_number) + " "
         else:
             disc_number_str = ""
-        path_album = create_directory(path_base + "/" + albumArtist + "/" + disc_number_str + album)
+        path_album = create_directory(path_base + "/" + albumArtist + "/\"" + disc_number_str + album + "\"")
         # print("path_album: " + path_album)
+        print()
 
         # record stream
         if pre_subprocess != None:
