@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# Ask for sudo passwd :-)
+# and for reuse "sudo renice -n -5"
+sudo clear
+
+SRC_DIR="$(dirname "$(readlink -f "$0")")"
+
+# Start in the background and get PID to renice
+python3 "$SRC_DIR"/spotifyripper.py &
+
+RIPPER_PID=$!
+
+# Give higher priority to $PID (reduces delays)
+# but lower priority than pulseaudio which runs at nice -10
+sudo renice -n -5 -p "$RIPPER_PID"
+
+# kill everything on Ctrl-C (SIGINT)
+trap 'kill "$RIPPER_PID"' INT TERM
+
+# foreground process: waiting
+echo "Type Ctrl-C to stop recording."
+wait "$RIPPER_PID"
