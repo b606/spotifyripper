@@ -276,4 +276,11 @@ session_bus = dbus.SessionBus()
 session_bus.add_signal_receiver(spotify_handler, 'PropertiesChanged', None, 'org.mpris.MediaPlayer2.spotify',  '/org/mpris/MediaPlayer2')
 
 loop = GLib.MainLoop()
-loop.run()
+
+try:
+    loop.run()
+except KeyboardInterrupt:
+    # Clean up subprocesses on Ctrl-C (SIGINT)
+    if pre_subprocess != None:
+        pre_subprocess.terminate()
+    loop.quit()
