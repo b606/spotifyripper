@@ -237,9 +237,9 @@ def spotify_handler(*args):
 
         if (artist != "") or (album != ""):
             # parec starts too soon after the advertisement bits.
-            # Add 1s delay in order to skip the end of the advertisement.
+            # Add 1ms delay in order to skip the end of the advertisement.
             if advertisement_detected == True:
-                time.sleep(1)
+                time.sleep(0.001)
             pre_subprocess = subprocess.Popen(["parec",  "--monitor-stream=" + str(spotify_sink_index), "--file-format=wav", file_input])
             advertisement_detected = False
 
