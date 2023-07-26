@@ -224,6 +224,7 @@ def spotify_handler(*args):
 
         # refresh spotify_sink_index
         old_spotify_sink_index = spotify_sink_index
+        print("(info) old_spotify_sink_index: " + str(old_spotify_sink_index))
         spotify_sink_index = get_spotify_sink_index()
         if (old_spotify_sink_index != spotify_sink_index):
             print("(info) spotify_sink_index: " + str(spotify_sink_index))
