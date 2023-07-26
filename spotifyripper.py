@@ -33,15 +33,18 @@ spotify_sink_index = -1
 
 
 def get_spotify_sink_index():
-    with pulsectl.Pulse('spotify') as pulse:
-        for sink in pulse.sink_input_list():
-            # if (sink.name == "Spotify"):
-                # print("sink.name:" + sink.name)
-                # print("sink.corked:" + str(sink.corked))
-            if (sink.name == "Spotify") and (sink.corked == False):
-                return sink.index
-
-    return -1
+    s_index = -1
+    # NOTE: do not return until the spotify sink is uncorked (unmuted)
+    #   The script was unable to catch uncorked sink when run at higher priority (renice -n -5)
+    while s_index == -1:
+        with pulsectl.Pulse('spotify') as pulse:
+            for sink in pulse.sink_input_list():
+                # if (sink.name == "Spotify"):
+                #     print("sink.name:" + sink.name + "; sink.corked:" + str(sink.corked))
+                if (sink.name == "Spotify") and (sink.corked == False):
+                    s_index = sink.index
+        time.sleep(0.001)
+    return s_index
 
 
 def create_directory(path_album):
